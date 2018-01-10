@@ -1,0 +1,112 @@
+/*              Size table             */
+@import "../../styles/variables.scss";
+@import "../../styles/typography.scss";
+
+.data-form-title {
+  margin-bottom: 25px;
+  text-align: left;
+
+  @extend .font-dtype-title-aux;
+}
+
+.radio-padding {
+  display: inline-block;
+  padding-top: 8px;
+}
+
+.check-box {
+  margin-top: 16px;
+  margin-left: 230px;
+}
+.checkbox-wrapper {
+  &.ctm-height {
+    height: 30px;
+  }
+  &.disabled {
+    input[type=radio] + label {
+      border-radius: 50%;
+      background-image: url('../../assets/img/radio/radio_act_off.svg');
+      border: 1px solid #cdd1d4;
+      span {
+        color: $prm-clr-add-smth;
+      }
+    }
+  }
+}
+.content-box.center{
+  background: $prm-clr-substrate;
+  font-size: 14px;
+  line-height: 20px;
+  padding: 25px 0 !important;
+}
+.content-box{
+  padding: 35px 0;
+}
+
+.component-wrapper {
+  margin-bottom: 32px;
+}
+
+.btn-wrapper-bottom {
+  padding-top: 40px;
+}
+
+.radio-padding {
+  display: inline-block;
+  padding-top: 8px;
+}
+label{
+  vertical-align: middle;
+}
+
+.m-t10 {
+  margin-top: 10px;
+}
+
+.aux-position {
+  display: inline-block;
+}
+@media (min-width: 768px)
+{
+  .aux-position{
+    position: relative;
+    top:10px;
+  }
+
+  .aux-position-ctm{
+    position: relative;
+    top: 13px;
+    left: -13px;
+    float: right;
+  }
+
+}
+
+.document-foreign-info {
+  margin-top: 16px;
+
+  .info-wrap {
+    margin-bottom: 0;
+  }
+}
+
+.nosnils-info {
+  display: block;
+  float: left;
+
+  @extend .font-dtype-text-small;
+}
+
+.info-check-label {
+  margin: 16px 0;
+
+  .info-label-span {
+    top: 0;
+    cursor: pointer;
+  }
+}
+
+.document-foreign-prompt {
+  margin-top: 8px;
+  margin-left: 16px;
+}

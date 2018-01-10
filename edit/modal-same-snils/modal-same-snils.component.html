@@ -1,0 +1,39 @@
+<div id="popup1" class="overlay">
+  <div class="content-box popup span_15">
+    <a href="" class="close-button" (click)="onCancel($event)"></a>
+
+    <div class="row">
+      <div class="col span_14 push_1">
+        <h1>СНИЛС уже используется</h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col span_14 push_1">
+        <div class="font-dtype-text-small">
+            <span>
+              СНИЛС <span class="font-dtype-text-small-bold">{{snils}}</span> уже используется в другой учетной записи. Пожалуйста,<br>
+              убедитесь, что вы ввели верный номер. Если номер введен верно, запустите проверку<br>
+              еще раз.
+            </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="component-wrapper row">
+      <div class="col span_13 push_1 btn-wrapper">
+        <button class="acc-set-btn blank span_5 fl"
+               (click)="onCancel($event)"
+               type="button">
+          Введите СНИЛС заново
+        </button>
+        <button *ngIf="!isExistTrustUser" class="acc-set-btn span_5 fr"
+               (click)="onOk($event)"
+               type="submit">
+          СНИЛС введен верно
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

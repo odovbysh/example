@@ -1,0 +1,706 @@
+<div class="container edit">
+  <div class="fc span_15 ">
+    <div class="content-box gutters">
+
+      <div class="row">
+        <div class="col span_13 push_1">
+          <a *ngIf="!isRedirectedFrom" href="" class="backwards-btn" [routerLink]="['/profile/user/']"></a>
+          <h1>{{'COMMON_INFO' | translate:lang}}</h1>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="!isContainsUpCfmCodeOrAddress && !userData.trusted">
+        <div class="col span_13 push_1">
+          <div class="info-wrap info info-wrap-upstep1">
+            <i class="icon">!</i>
+            <div class="info-text" [innerHTML]="'COMMON_INFO_PROMPT' | translate:lang"></div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="row" *ngIf="isContainsUpCfmCodeOrAddress">
+        <div class="col span_13 push_1">
+          <div class="info-wrap info info-wrap-upstep1">
+            <i class="icon">!</i>
+
+              <div class="info-text">
+                <ng-template #byRa>Вы уже подали заявление на подтверждение личности в Центре обслуживания. При изменении данных необходимо будет подать новое заявление.</ng-template>
+                <span *ngIf="userData.snils && !userData.containsUpCfmCode; else byRa;">Вы уже заказали доставку кода подтверждения личности по почте на<br>
+                проверенные ранее данные. При изменении этих данных вам необходимо будет<br>
+                заказать новый код подтверждения.
+                </span>
+
+                <p class="bold">Старый код подтверждения будет недействителен.</p>
+              </div>
+              <div>
+                <input id="chkCfmCode"
+                       class="info-text"
+                       name="chkCfmCode"
+                       type="checkbox"
+
+                       [(ngModel)]="chkCfmCode"
+                       (ngModelChange)="checkCfmCode()">
+                <label class="push_1 info-check-label" for="chkCfmCode">
+                  	<span class="info-text info-label-span">
+                      Я хочу изменить данные. Я предупрежден, что старый код подтверждения<br>
+                      перестает действовать.
+                  </span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form [formGroup]="complexForm" (ngSubmit)="checkSnils()">
+
+        <div class="row">
+          <div class="col span_13 push_1">
+            <h5 class="data-form-title">{{'EDIT_DATA' | translate:lang}}</h5>
+          </div>
+        </div>
+
+
+        <div class="component-wrapper row" id="lastName">
+          <div class="col span_4 push_1">
+            <span class="component-paragraph">{{'SURNAME' | translate:lang}}</span>
+          </div>
+          <div class="col span_9">
+            <input  [class.has-error]="!complexForm.controls['lastName'].valid && complexForm.controls['lastName'].touched "
+                    formControlName="lastName"
+                    [(ngModel)]="userData.lastName"
+                    name="surname"
+                    class="inputfield"
+                    type="text" />
+            <div class="input-validate"
+                 *ngIf="(!complexForm.controls['lastName'].valid && complexForm.controls['lastName'].touched ) ||
+                        (!complexForm.controls['lastName'].valid && submitted)">
+              <span *ngIf="complexForm.controls['lastName'].errors?.required">{{'EDIT_PROFILE.VALID.LASTNAME' | translate:lang}}</span>
+              <span *ngIf="complexForm.controls['lastName'].errors?.maxlength">{{'Длина фамилии не должна превышать 60 символов' | translate:lang}}</span>
+              <span *ngIf="complexForm.controls['lastName'].errors?.pattern">
+                 Поле может содержать только буквы русского или латинского алфавитов, цифры, дефис, пробел, апостроф, точку, круглые скобки. В поле недопустимо одновременно использовать русские и латинские буквы.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="component-wrapper row" id="firstName">
+          <div class="col span_4 push_1">
+            <span class="component-paragraph">{{'NAME' | translate:lang}}</span>
+          </div>
+          <div class="col span_9">
+            <input [class.has-error]="!complexForm.controls['firstName'].valid && complexForm.controls['firstName'].touched"
+                   formControlName="firstName"
+                   [(ngModel)]="userData.firstName"
+                   name="name"
+                   class="inputfield"
+                   type="text"
+                   value="">
+            <div class="input-validate"
+                 *ngIf="(!complexForm.controls['firstName'].valid && complexForm.controls['firstName'].touched) ||
+                        (!complexForm.controls['firstName'].valid && submitted)">
+              <span *ngIf="complexForm.controls['firstName'].errors?.required">{{'EDIT_PROFILE.VALID.FIRSTNAME' | translate:lang}}</span>
+              <span *ngIf="complexForm.controls['firstName'].errors?.maxlength">{{'Длина имени не должна превышать 60 символов' | translate:lang}}</span>
+              <span *ngIf="complexForm.controls['firstName'].errors?.pattern">
+                 Поле может содержать только буквы русского или латинского алфавитов, цифры, дефис, пробел, апостроф, точку, запятую. Запятая допустима только в середине слова. В поле недопустимо одновременно использовать русские и латинские буквы.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="component-wrapper row" id="middleName">
+          <div class="col span_4 push_1">
+            <span class="component-paragraph">{{'PATRONYMIC' | translate:lang}}</span>
+          </div>
+          <div class="col span_9">
+            <div>
+              <input [class.has-error]="!complexForm.controls['middleName'].valid &&
+                                      complexForm.controls['middleName'].touched &&
+                                      !complexForm.controls['noPatronymic'].value"
+                     formControlName="middleName"
+                     [(ngModel)]="userData.middleName"
+                     name="patronymic"
+                     class="inputfield" type="text" >
+              <div class="input-validate"
+                   *ngIf="!complexForm.controls['noPatronymic'].value &&
+                          ((!complexForm.controls['middleName'].valid && complexForm.controls['middleName'].touched) ||
+                          (!complexForm.controls['middleName'].valid && submitted))">
+                <span *ngIf="complexForm.controls['middleName'].errors?.required">{{'EDIT_PROFILE.VALID.PATRONYMICNAME' | translate:lang}}</span>
+                <span *ngIf="complexForm.controls['middleName'].errors?.maxlength">{{'Длина отчества не должна превышать 60 символов' | translate:lang}}</span>
+                <span *ngIf="complexForm.controls['middleName'].errors?.pattern">
+                 Поле может содержать только буквы русского или латинского алфавитов, цифры, дефис, пробел, апостроф, точку, круглые скобки. В поле недопустимо одновременно использовать русские и латинские буквы.
+                </span>
+              </div>
+            </div>
+
+            <div class="span_4 checkbox-wrapper ctm-height m-t10">
+              <input formControlName="noPatronymic"
+                     id="no-patronymic"
+                     name="no-patronymic"
+                     type="checkbox"
+                     value="valuable"
+                     [(ngModel)]="noPatronymic"
+                     (focus)="setSeletectedElement('no-patronymic')"
+                     (blur)="setSeletectedElement('')"
+                     (ngModelChange)="checkFormControllerInput('middleName', 'noPatronymic')">
+              <label for="no-patronymic"
+                     [ngClass]="{'focus': selectedFocusInputElement === 'no-patronymic'}"
+                     [class.disabled]="complexForm.controls['noPatronymic'].disabled">
+                <span>{{'NO_PATRONYMIC' | translate:lang}}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="component-wrapper row" id="gender">
+          <div class="col span_4 push_1">
+            <span class="component-paragraph">{{'GENDER' | translate:lang}}</span>
+          </div>
+
+          <div class="col span_7">
+            <div class="span_4 checkbox-wrapper ctm-height">
+              <input type="radio"
+                     formControlName="gender"
+                     [(ngModel)]="userData.gender"
+                     (click)="userData.gender = 'M'"
+                     (focus)="setSeletectedElement('radio_gender_m')"
+                     (blur)="setSeletectedElement('')"
+                     id="radio_gender_m"
+                     name="gender"
+                     class="radio-box"
+                     value="M" />
+              <label for="radio_gender_m"
+                     [ngClass]="{'focus': selectedFocusInputElement === 'radio_gender_m'}"
+                     [class.disabled]="complexForm.controls['gender'].disabled">
+                <span>{{'GENDER_MALE' | translate:lang}}</span>
+              </label>
+            </div>
+
+            <div class="span_4 checkbox-wrapper ctm-height">
+              <input type="radio"
+                     formControlName="gender"
+                     [(ngModel)]="userData.gender"
+                     (click)="userData.gender = 'F'"
+                     (focus)="setSeletectedElement('radio_gender_w')"
+                     (blur)="setSeletectedElement('')"
+                     id="radio_gender_w"
+                     name="gender"
+                     class="radio-box"
+                     value="F" />
+              <label for="radio_gender_w"
+                     [ngClass]="{'focus': selectedFocusInputElement === 'radio_gender_w'}"
+                     [class.disabled]="complexForm.controls['gender'].disabled">
+                <span>{{'GENDER_FEMALE' | translate:lang}}</span>
+              </label>
+            </div>
+
+            <div class="input-validate"
+                 *ngIf="(!complexForm.controls['gender'].valid && complexForm.controls['gender'].touched) ||
+                        (!complexForm.controls['gender'].valid && submitted)">
+              {{'EDIT_PROFILE.VALID.GENDER' | translate:lang}}
+            </div>
+          </div>
+
+        </div>
+
+        <div class="component-wrapper row" id="birthDate">
+          <div class="col span_4 push_1">
+            <span class="component-paragraph">{{'DATE_OF_BIRTH' | translate:lang}}</span>
+          </div>
+          <div class="col span_3">
+            <my-date-picker formControlName="birthDate"
+                            [(selDate)]="userData.birthDate"
+                            [options]="dpOptionsBirthDate"
+                            [placeholder]="customPlaceholder"
+                            [locale]="customLocale"
+                            (dateChanged)="onDateChanged($event, 'BIRTH_DATE')"
+                            [class.dp-has-error]="!complexForm.controls['birthDate'].valid
+                                      && complexForm.controls['birthDate'].dirty
+                                      && !complexForm.controls['birthDate'].disabled
+                                      || complexForm.controls['birthDate'].value?.formatted === ''
+                                      && complexForm.controls['birthDate'].touched">
+            </my-date-picker>
+            <div class="input-validate span_9"
+                 *ngIf="!complexForm.controls['birthDate'].valid
+                          && complexForm.controls['birthDate'].dirty
+                          && !complexForm.controls['birthDate'].disabled
+                          || complexForm.controls['birthDate'].value?.formatted === ''
+                          && complexForm.controls['birthDate'].touched">
+              {{'EDIT_PROFILE.VALID.BIRTHDATE' | translate:lang}}
+            </div>
+
+          </div>
+        </div>
+
+        <div class="component-wrapper row" id="birthPlace">
+          <div class="col span_4 push_1">
+            <span class="component-paragraph">{{'PLACE_OF_BIRTH' | translate:lang}}</span>
+          </div>
+          <div class="col span_9" >
+                <textarea [class.has-error]="!complexForm.controls['birthPlace'].valid && complexForm.controls['birthPlace'].touched"
+                          formControlName="birthPlace"
+                          [(ngModel)]="userData.birthPlace"
+                          name="placeOfBirth"
+                          placeholder="{{'BIRTH_PLACE_PLACEHOLDER' | translate:lang}}"
+                          class="inputfield"></textarea>
+            <div class="input-validate"
+                 *ngIf="(!complexForm.controls['birthPlace'].valid && complexForm.controls['birthPlace'].touched) ||
+                      (!complexForm.controls['birthPlace'].valid && submitted)">
+              <span *ngIf="complexForm.controls['birthPlace'].errors?.required">{{'EDIT_PROFILE.VALID.BIRTHPLACE' | translate:lang}}</span>
+              <span *ngIf="complexForm.controls['birthPlace'].errors?.maxlength">{{'Длина не должна превышать 255 символов' | translate:lang}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="component-wrapper row" id="citizenship">
+          <div class="col span_4 push_1">
+            <span class="component-paragraph">{{'CITIZENSHIP' | translate:lang}}</span>
+          </div>
+          <div class="col span_9">
+            <select  [class.has-error]="!complexForm.controls['citizenship'].valid &&
+                      complexForm.controls['citizenship'].touched"
+                     formControlName="citizenship"
+                     [(ngModel)]="userData.citizenship"
+                     (ngModelChange)="checkCitizenship()"
+                     class="inputfield">
+              <option class="span_9"
+                      [selected]="userData.citizenship == ctz.value"
+                      *ngFor="let ctz of citizenshipArr; let i = index;"  value="{{ctz.value}}">{{ctz.label}}</option>
+            </select>
+            <div class="input-validate"
+                 *ngIf="(!complexForm.controls['citizenship'].valid && complexForm.controls['citizenship'].touched) ||
+                      (!complexForm.controls['citizenship'].valid && submitted)">{{'EDIT_PROFILE.VALID.CITIZENSHIP' | translate:lang}}</div>
+          </div>
+        </div>
+
+        <div class="component-wrapper row" id="identityDocument">
+          <div class="col span_4 push_1">
+            <span class="component-paragraph">{{'IDENTITY_DOCUMENT' | translate:lang}}</span>
+          </div>
+          <div class="col span_9">
+            <select
+              formControlName="identityDocument"
+              (ngModelChange)="onIDChange()"
+              [(ngModel)]="identityDocument"
+              id="selectIDdoc"
+              class="inputfield">
+              <option value="RF_PASSPORT" [selected]="isRFSelectStart">{{'ID_DOC.NATIVE_PASSPORT' | translate:lang}}</option>
+              <option value="{{userData.citizenship === 'RUS' ? 'FOREIGN_PASSPORT' : 'FID_DOC'}}" [selected]="!isRFSelectStart">
+                {{ ('ID_DOC.' + (userData.citizenship === 'RUS' ? 'FOREIGN_PASSPORT' : 'FID_DOC')) | translate:lang }}
+              </option>
+            </select>
+            <div *ngIf="complexForm.controls['identityDocument'].value === 'FID_DOC'"
+                 class="document-foreign-prompt">
+              <div class="font-dtype-prompt">
+                Документ, удостоверяющий вашу личность на территории<br>
+                России.
+              </div>
+            </div>
+
+            <div *ngIf="userData.citizenship === 'RUS' &&
+                    complexForm.controls['identityDocument'].value === 'FOREIGN_PASSPORT'"
+                 class="document-foreign-info">
+              <div class="info-wrap info">
+                <i class="icon">!</i>
+                <div class="info-text">
+                  Внимание! Заграничный паспорт<br>
+                  гражданина РФ может быть применен<br>
+                  в качестве документа, удостоверяющего<br>
+                  личность, только в случае отсутствия<br>
+                  действующего внутреннего паспорта<br>
+                  гражданина РФ
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="ident">
+          <div *ngIf="userData.citizenship === 'RUS' &&
+                    complexForm.controls['identityDocument'].value === 'FOREIGN_PASSPORT'">
+
+            <div class="component-wrapper row" id="surnameInt">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">Фамилия (латиницей)</span>
+                <div class="aux-position-ctm">
+                  <my-auxilary-popup textMessage="{{'EDIT_PROFILE.AUX.INT_LASTNAME' | translate:lang}}"></my-auxilary-popup>
+                </div>
+              </div>
+              <div class="col span_9">
+                <input [class.has-error]="!complexForm.controls['surnameInt'].valid &&
+                      complexForm.controls['surnameInt'].touched"
+                       formControlName="surnameInt"
+                       [(ngModel)]="userPassportForeign.lastName"
+                       class="inputfield"
+                       name="surnameInt"
+                       type="text"
+                       (keydown)="checkKey($event)" />
+                <div class="input-validate"
+                     *ngIf="(!complexForm.controls['surnameInt'].valid && complexForm.controls['surnameInt'].touched) ||
+                      (!complexForm.controls['surnameInt'].valid && submitted)">
+                  Поле обязательно для заполнения
+                </div>
+              </div>
+            </div>
+
+            <div class="component-wrapper row" id="nameInt">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">Имя (латиницей)</span>
+                <div class="aux-position">
+                  <my-auxilary-popup textMessage="{{'EDIT_PROFILE.AUX.INT_FIRSTNAME' | translate:lang}}"></my-auxilary-popup>
+                </div>
+              </div>
+              <div class="col span_9">
+                <input [class.has-error]="!complexForm.controls['nameInt'].valid &&
+                      complexForm.controls['nameInt'].touched"
+                       formControlName="nameInt"
+                       [(ngModel)]="userPassportForeign.firstName"
+                       class="inputfield"
+                       name="nameInt"
+                       type="text"
+                       (keydown)="checkKey($event)" />
+                <div class="input-validate"
+                     *ngIf="(!complexForm.controls['nameInt'].valid && complexForm.controls['nameInt'].touched) ||
+                      (!complexForm.controls['nameInt'].valid && submitted)">
+                  Поле обязательно для заполнения
+                </div>
+              </div>
+            </div>
+
+            <div class="component-wrapper row" id="passportSerNumInt">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">Серия и номер</span>
+              </div>
+              <div class="col span_9">
+                <input [class.has-error]="!complexForm.controls['passportSerNumInt'].valid && complexForm.controls['passportSerNumInt'].touched"
+                       formControlName="passportSerNumInt"
+                       [(ngModel)]="passportIntSerNum"
+                       (ngModelChange)="fillIntPassportSerNum()"
+                       class="inputfield"
+                       name="passportSerNumInt"
+                       [textMask]="{mask: cfg.mask.foreignPassportIdentity}"
+                       type="text">
+                <div class="input-validate"
+                     *ngIf="(!complexForm.controls['passportSerNumInt'].valid && complexForm.controls['passportSerNumInt'].touched) ||
+                      (!complexForm.controls['passportSerNumInt'].valid && submitted)">
+                  Поле обязательно для заполнения
+                </div>
+              </div>
+            </div>
+
+            <div class="component-wrapper row" id="issuedByInt">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">Орган, выдавший документ</span>
+              </div>
+              <div class="col span_9">
+              <textarea [class.has-error]="!complexForm.controls['issuedByInt'].valid &&
+                      complexForm.controls['issuedByInt'].touched"
+                        formControlName="issuedByInt"
+                        [(ngModel)]="userPassportForeign.issuedBy"
+                        class="inputfield"
+                        name="issuedByInt"></textarea>
+                <div class="input-validate"
+                     *ngIf="(!complexForm.controls['issuedByInt'].valid && complexForm.controls['issuedByInt'].touched) ||
+                      (!complexForm.controls['issuedByInt'].valid && submitted)">
+                <span *ngIf="complexForm.controls['issuedBy'].errors?.required">Поле обязательно для заполнения</span>
+                <span *ngIf="complexForm.controls['issuedByInt'].errors?.pattern">{{'EDIT_PROFILE.VALID.ISSUEDBY_PATTERN' | translate:lang}}</span>
+              </div>
+            </div>
+          </div>
+
+            <div class="component-wrapper row" id="issueDateInt">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">Дата выдачи</span>
+              </div>
+              <div class="col span_3">
+                <my-date-picker formControlName="issueDateInt"
+                                [(selDate)]="userPassportForeign.issueDate"
+                                [(options)]="dpOptionsFromInt"
+                                [placeholder]="customPlaceholder"
+                                [locale]="customLocale"
+                                (dateChanged)="onDateChanged($event, 'FRGN_PASS')"
+                                [class.dp-has-error]="!complexForm.controls['issueDateInt'].valid
+                                        && complexForm.controls['issueDateInt'].dirty
+                                        && !complexForm.controls['issueDateInt'].disabled
+                                        || complexForm.controls['issueDateInt'].value?.formatted === ''
+                                        && complexForm.controls['issueDateInt'].touched">
+                </my-date-picker>
+
+                <div class="input-validate span_9"
+                     *ngIf="!complexForm.controls['issueDateInt'].valid
+                          && complexForm.controls['issueDateInt'].dirty
+                          && !complexForm.controls['issueDateInt'].disabled
+                          || complexForm.controls['issueDateInt'].value?.formatted === ''
+                          && complexForm.controls['issueDateInt'].touched">
+                  Поле обязательно для заполнения
+                </div>
+              </div>
+            </div>
+
+            <div class="component-wrapper row" id="issuedUntilInt">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">Действителен до</span>
+              </div>
+              <div class="col span_3">
+                <my-date-picker formControlName="issuedUntilInt"
+                                [(selDate)]="userPassportForeign.expiryDate"
+                                [(options)]="dpOptionsToInt"
+                                [placeholder]="customPlaceholder"
+                                [locale]="customLocale"
+                                (dateChanged)="onDateChanged($event, 'FRGN_PASS', 'expiry')"
+                                [class.dp-has-error]="!complexForm.controls['issuedUntilInt'].valid
+                                    && complexForm.controls['issuedUntilInt'].dirty
+                                    && !complexForm.controls['issuedUntilInt'].disabled
+                                    || complexForm.controls['issuedUntilInt'].value?.formatted === ''
+                                    && complexForm.controls['issuedUntilInt'].touched">
+                </my-date-picker>
+                <div class="input-validate span_9"
+                     *ngIf="!complexForm.controls['issuedUntilInt'].valid
+                          && complexForm.controls['issuedUntilInt'].dirty
+                          && !complexForm.controls['issuedUntilInt'].disabled
+                          || complexForm.controls['issuedUntilInt'].value?.formatted === ''
+                          && complexForm.controls['issuedUntilInt'].touched">
+                  Поле обязательно для заполнения
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div *ngIf="userData.citizenship === 'RUS' &&
+                    complexForm.controls['identityDocument'].value === 'RF_PASSPORT'">
+
+            <div class="component-wrapper row" id="passportSerNum">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">{{'SER_NUM' | translate:lang}}</span>
+              </div>
+              <div class="col span_9">
+                <input [class.has-error]="!complexForm.controls['passportSerNum'].valid && complexForm.controls['passportSerNum'].touched"
+                       formControlName="passportSerNum"
+                       [(ngModel)]="passportSerNum"
+                       (ngModelChange)="fillPassportSerNum()"
+                       class="inputfield"
+                       name="passportSerNum"
+                       [textMask]="{mask: cfg.mask.passportRF}"
+                       type="text"
+                       value="">
+                <div class="input-validate"
+                     *ngIf="(!complexForm.controls['passportSerNum'].valid && complexForm.controls['passportSerNum'].touched) ||
+                      (!complexForm.controls['passportSerNum'].valid && submitted)">{{'EDIT_PROFILE.VALID.SERIESNUM' | translate:lang}}</div>
+              </div>
+            </div>
+
+            <div class="component-wrapper row" id="issuedBy">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">{{'PASSPORT_ISSUED_BY' | translate:lang}}</span>
+              </div>
+              <div class="col span_9">
+                <textarea [class.has-error]="!complexForm.controls['issuedBy'].valid && complexForm.controls['issuedBy'].touched"
+                          formControlName="issuedBy"
+                          [(ngModel)]="userPassportRF.issuedBy"
+                          class="inputfield"
+                          name="passportIssuedBy"></textarea>
+                <div class="input-validate"
+                     *ngIf="(!complexForm.controls['issuedBy'].valid && complexForm.controls['issuedBy'].touched) ||
+                      (!complexForm.controls['issuedBy'].valid && submitted)">
+                  <span *ngIf="complexForm.controls['issuedBy'].errors?.required">{{'EDIT_PROFILE.VALID.ISSUEDBY' | translate:lang}}</span>
+                  <span *ngIf="complexForm.controls['issuedBy'].errors?.maxlength">{{'Длина не должна превышать 233 символов' | translate:lang}}</span>
+                  <span *ngIf="complexForm.controls['issuedBy'].errors?.pattern">{{'EDIT_PROFILE.VALID.ISSUEDBY_PATTERN' | translate:lang}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="component-wrapper row" id="issueDate">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">{{'ISSUE_DATE' | translate:lang}}</span>
+              </div>
+              <div class="col span_3">
+                <my-date-picker formControlName="issueDate"
+                                [(selDate)]="userPassportRF.issueDate"
+                                [(options)]="dpOptionsRF"
+                                [placeholder]="customPlaceholder"
+                                (dateChanged)="onDateChanged($event, 'RF_PASSPORT')"
+                                [locale]="customLocale"
+                                [class.dp-has-error]="!complexForm.controls['issueDate'].valid
+                                    && complexForm.controls['issueDate'].dirty
+                                    && !complexForm.controls['issueDate'].disabled
+                                    || complexForm.controls['issueDate'].value?.formatted === ''
+                                    && complexForm.controls['issueDate'].touched">
+                </my-date-picker>
+                <div class="input-validate span_9"
+                     *ngIf="!complexForm.controls['issueDate'].valid
+                          && complexForm.controls['issueDate'].dirty
+                          && !complexForm.controls['issueDate'].disabled
+                          || complexForm.controls['issueDate'].value?.formatted === ''
+                          && complexForm.controls['issueDate'].touched">
+                  {{'EDIT_PROFILE.VALID.ISSUEDATE' | translate:lang}}
+                </div>
+              </div>
+            </div>
+
+            <div class="component-wrapper row" id="issueId">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">{{'PASSPORT_DEP_CODE' | translate:lang}}</span>
+              </div>
+              <div class="col span_9">
+                <input [class.has-error]="!complexForm.controls['issueId'].valid && complexForm.controls['issueId'].touched"
+                       formControlName="issueId"
+                       [(ngModel)]="userPassportRF.issueId"
+                       class="inputfield"
+                       name="passportDepCode"
+                       type="text"
+                       [textMask]="{mask: cfg.mask.passportRFCode}">
+                <div class="input-validate"
+                     *ngIf="(!complexForm.controls['issueId'].valid && complexForm.controls['issueId'].touched) ||
+                      (!complexForm.controls['issueId'].valid && submitted)">{{'EDIT_PROFILE.VALID.ISSUEID' | translate:lang}}</div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="userData.citizenship !== 'RUS'">
+
+            <div class="component-wrapper row" id="seriesFIDDoc">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">{{'SERIES' | translate:lang}}</span>
+              </div>
+              <div class="col span_9">
+                <input [class.has-error]="!complexForm.controls['seriesFIDDoc'].valid && complexForm.controls['seriesFIDDoc'].touched"
+                       formControlName="seriesFIDDoc"
+                       [(ngModel)]="userFIDDocument.series"
+                       class="inputfield"
+                       name="passportSerForeign"
+                       type="text">
+                <div class="input-validate"
+                     *ngIf="(!complexForm.controls['seriesFIDDoc'].valid && complexForm.controls['seriesFIDDoc'].touched) ||
+                      (!complexForm.controls['seriesFIDDoc'].valid && submitted)">
+                  <span *ngIf="complexForm.controls['seriesFIDDoc'].errors?.required">{{'EDIT_PROFILE.VALID.SERIES' | translate:lang}}</span>
+                  <span *ngIf="complexForm.controls['seriesFIDDoc'].errors?.pattern">{{'EDIT_PROFILE.VALID.PATTERN_SER' | translate:lang}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="component-wrapper row" id="numberFIDDoc">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">{{'NUMBER' | translate:lang}}</span>
+              </div>
+              <div class="col span_9">
+                <input [class.has-error]="!complexForm.controls['numberFIDDoc'].valid && complexForm.controls['numberFIDDoc'].touched"
+                       formControlName="numberFIDDoc"
+                       [(ngModel)]="userFIDDocument.number"
+                       class="inputfield"
+                       name="passportNumForeign">
+                <div class="input-validate"
+                     *ngIf="(!complexForm.controls['numberFIDDoc'].valid && complexForm.controls['numberFIDDoc'].touched) ||
+                      (!complexForm.controls['numberFIDDoc'].valid && submitted)">
+                  <span *ngIf="complexForm.controls['numberFIDDoc'].errors?.required">{{'EDIT_PROFILE.VALID.NUMBER' | translate:lang}}</span>
+                  <span *ngIf="complexForm.controls['numberFIDDoc'].errors?.pattern">{{'EDIT_PROFILE.VALID.PATTERN_NUM' | translate:lang}}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="component-wrapper row" id="issueDateFIDDoc">
+              <div class="col span_4 push_1">
+                <span class="component-paragraph">{{'ISSUE_DATE' | translate:lang}}</span>
+              </div>
+              <div class="col span_3">
+                <my-date-picker formControlName="issueDateFIDDoc"
+                                [(selDate)]="userFIDDocument.issueDate"
+                                (dateChanged)="onDateChanged($event, 'FID_DOC')"
+                                [(options)]="dpOptionsFID"
+                                [placeholder]="customPlaceholder"
+                                [locale]="customLocale"
+                                [class.dp-has-error]="!complexForm.controls['issueDateFIDDoc'].valid
+                                    && complexForm.controls['issueDateFIDDoc'].dirty
+                                    && !complexForm.controls['issueDateFIDDoc'].disabled
+                                    || complexForm.controls['issueDateFIDDoc'].value?.formatted === ''
+                                    && complexForm.controls['issueDateFIDDoc'].touched">
+                </my-date-picker>
+                <div class="input-validate span_9"
+                     *ngIf="!complexForm.controls['issueDateFIDDoc'].valid
+                          && complexForm.controls['issueDateFIDDoc'].dirty
+                          && !complexForm.controls['issueDateFIDDoc'].disabled
+                          || complexForm.controls['issueDateFIDDoc'].value?.formatted === ''
+                          && complexForm.controls['issueDateFIDDoc'].touched">
+                  {{'EDIT_PROFILE.VALID.ISSUEDATE' | translate:lang}}
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="component-wrapper row">
+          <div class="col span_4 push_1">
+            <span class="component-paragraph">{{'SNILS' | translate:lang}}</span>
+            <div class="aux-position">
+              <my-auxilary-popup imgSource="/img/png-pics/snils.png" textMessage="{{'IIA_ACC_DESC' | translate:lang}}">
+              </my-auxilary-popup>
+            </div>
+          </div>
+          <div class="col span_9"
+               id="snils">
+            <input [class.has-error]="!noSnils &&
+                                      ((!complexForm.controls['snils'].valid || isSameTrustedSnils) &&
+                                       complexForm.controls['snils'].touched)"
+                   formControlName="snils"
+                   id="snils"
+                   [(ngModel)]="userData.snils"
+                   (ngModelChange)="onChangeSnils();"
+                   class="inputfield"
+                   name="snils"
+                   type="text"
+                   [disabled]="noSnils"
+                   [textMask]="{mask: cfg.mask.snils}">
+            <div class="input-validate"
+                 *ngIf="!noSnils && ((!complexForm.controls['snils'].valid && complexForm.controls['snils'].touched) ||
+                        (!complexForm.controls['snils'].valid && submitted))">{{'EDIT_PROFILE.VALID.SNILS' | translate:lang}}</div>
+            <div class="input-validate"
+                 *ngIf="isSameTrustedSnils"
+                 [innerHTML]="'EDIT_PROFILE.VALID.EXISTTRUSTEDSNILS' | translate:lang:{url: '/recovery/'}">
+            </div>
+
+            <div *ngIf="isExistSnils && userData.citizenship !== 'RUS' && userData.level === 1">
+              <div class="col span_4 checkbox-wrapper m-t10">
+                <input formControlName="noSnils"
+                       type="checkbox"
+                       value="valuable"
+                       id="snilsChecker"
+                       [(ngModel)]="noSnils"
+                       (change)="checkFormControllerInput('snils', 'noSnils')">
+                <label for="snilsChecker" [class.disabled]="complexForm.controls['noSnils'].disabled">
+                  <span>{{'EDIT_PROFILE.VALID.CHECKSNILS' | translate:lang}}</span>
+                </label>
+              </div>
+
+              <div *ngIf="!!noSnils" class="nosnils-info">
+                {{'EDIT_PROFILE.VALID.NOSNILS' | translate:lang}}
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+        <div class="component-wrapper row">
+          <div class="col span_13 push_1 btn-wrapper-bottom">
+            <button class="acc-set-btn {{!isRedirectedFrom ? 'span_3' : 'span_4'}} blank fl"
+                    type="button"
+                    (click)="onCancel($event);">
+              {{(!isRedirectedFrom ? 'CANCEL-BTN' : 'CANCEL-LATER-BTN') | translate:lang }}
+            </button>
+            <button
+              class="acc-set-btn {{!isRedirectedFrom ? 'span_3' : 'span_6'}} fr"
+              type="submit"
+              [ngClass]="{ disabled: isSameTrustedSnils || !chkCfmCode}"
+              [disabled]="isSameTrustedSnils || !chkCfmCode">
+              {{(!isRedirectedFrom ? 'SAVE-BTN' : 'OK-AND-CONT-BTN') | translate:lang }}
+            </button>
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>

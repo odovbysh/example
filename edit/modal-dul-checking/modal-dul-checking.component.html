@@ -1,0 +1,60 @@
+<div id="popup1" class="overlay">
+  <div class="content-box popup span_14">
+    <a href="" class="close-button" (click)="onCancel($event)"></a>
+
+    <div class="row">
+      <div class="col span_12 push_1">
+        <h1>Посетите центр обслуживания!</h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col span_12 push_1">
+        <div class="font-dtype-text-small">
+            <div>
+              После изменения основных данных нужно заново посетить центр обслуживаниядля<br>
+              подтверждения вашей личности. Только после этого ваша учетная запись станет<br>
+              подтвержденной и вы получите доступ ко всем госуслугам.
+            </div>
+          <div class="m-t40 m-b24" (click)="isHideAddInfo = !isHideAddInfo">
+            <span class="font-dtype-link-pseudo">
+              Зачем идти в центр обслуживания еще раз?
+            </span>
+            <span class="toggle-btn"
+                  [ngClass]="{ 'rotate-90deg-btn' : !isHideAddInfo }">
+            </span>
+          </div>
+          <div *ngIf="!isHideAddInfo" class="m-b40">
+            Это произошло из-за того, что при первом посещении центра обслуживания были<br>
+            указаны данные, которые не прошли проверку в МВД. Вероятно, оператору центра<br>
+            обслуживания была предоставлена недостоверная информация или при внесении<br>
+            данных в базу была сделана опечатка.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="component-wrapper row">
+      <div class="col span_12 push_1 btn-wrapper">
+        <a class="acc-set-btn blank span_6 fl"
+           target="_blank"
+           href="/public/ra">
+          Найти центр обслуживания
+        </a>
+        <button class="acc-set-btn span_6 fr"
+                type="submit"
+               (click)="onOk($event)">
+          Сохранить и продолжить
+        </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col span_6 push_1 font-dtype-prompt m-t24">
+        Карта откроется в соседней вкладке.<br />
+        Введенные вами данные не пропадут
+      </div>
+    </div>
+
+  </div>
+</div>

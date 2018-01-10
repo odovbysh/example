@@ -1,0 +1,43 @@
+@media (min-width: 768px)
+{
+  .component-paragraph.switch{
+    position: relative;
+    top:0;
+  }
+}
+
+.popup {
+  padding: 48px 0;
+
+  h1 {
+    padding: 0 0 40px;
+  }
+
+  .component-wrapper {
+    margin: 0;
+
+    &:last-of-type {
+    margin: 40px 0 0;
+    }
+  }
+
+  .m-t40 {
+    margin-top: 40px;
+  }
+
+  .m-b40 {
+    margin-bottom: 40px;
+  }
+
+  .m-b24 {
+    margin-bottom: 24px;
+  }
+
+  .m-t24 {
+    margin-top: 24px;
+  }
+
+  .btn-wrapper {
+    margin: 0;
+  }
+}

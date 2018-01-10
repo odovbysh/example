@@ -1,0 +1,27 @@
+@media (min-width: 768px)
+{
+  .component-paragraph.switch{
+    position: relative;
+    top:0;
+  }
+}
+
+.popup {
+  padding: 48px 0;
+
+  h1 {
+    padding: 0 0 40px;
+  }
+
+  .component-wrapper {
+    margin: 0;
+
+    &:last-of-type {
+    margin: 40px 0 0;
+    }
+  }
+
+  .btn-wrapper {
+    margin: 0;
+  }
+}
